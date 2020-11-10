@@ -72,6 +72,76 @@ def pengeluaran(nilai):
 
 # Inferensi
 def FR(l,m,mh,h,low,mid,midhigh,high):
-    
+    if(0<l<=1 and 0<low<=1):
+        rule = 1
+        yes = l
+        no = 0
+    elif (0<l<=1 and 0<mid<=1):
+        rule = 1
+        yes = l
+        no = 0
+    elif (0<l<=1 and 0<midhigh<=1):
+        rule = 1
+        yes = l
+        no = 0
+    elif (0<l<=1 and 0<high<=1):
+        rule = 1
+        yes = l
+        no = 0
+    elif (0<m<=1 and 0<low<=1):
+        rule, yes = 0
+        no = m
+    elif (0<m<=1 and 0<mid<=1):
+        rule = 1
+        yes = m
+        no = 0
+    elif (0<m<=1 and 0<midhigh<=1):
+        rule = 1
+        yes = m
+        no = 0
+    elif (0<m<=1 and 0<high<=1):
+        rule = 1
+        yes = m
+        no = 0
+    elif (0<mh<=1 and 0<low<=1):
+        rule,no = 0
+        yes = mh
+    elif (0<mh<=1 and 0<mid<=1):
+        rule,no = 0
+        yes = mh
+    elif (0<mh<=1 and 0<midhigh<=1):
+        rule = 1
+        yes = mh
+        no = 0
+    elif (0<mh<=1 and 0<high<=1):
+        rule = 1
+        yes = mh
+        no = 0
+    elif (0<h<=1 and 0<low<=1):
+        rule,no = 0
+        yes = h
+    elif (0<h<=1 and 0<mid<=1):
+        rule,no = 0
+        yes = h
+    elif (0<h<=1 and 0<midhigh<=1):
+        rule,no = 0
+        yes = h
+    elif (0<h<=1 and 0<high<=1):
+        rule = 1
+        yes = h
+        no = 0
+    return rules,yes,no
 
+# Defuzzification
+def sugeno(yes,no):
+    batasterima = 70
+    batastolak = 40
+    jumlah = yes+no
+    return ((yes*batasterima)+(no*batastolak)/jumlah)
+    
+#MAIN-----
 readExcel()
+for j in range(100):
+    pendapatan(float(income[i]))
+    pengeluaran(float(spending[i]))
+    FR(l,m,mh,h,low,mid,midhigh,high)
