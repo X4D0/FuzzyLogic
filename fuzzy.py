@@ -7,141 +7,124 @@ def readExcel():
     spending = baca['Pengeluaran'].tolist()
     return income,spending
 
+def writeExcel(data):
+    df = pd.DataFrame(data) 
+    writer = pd.ExcelWriter('Bantuan.xls')
+    df.to_excel(writer, sheet_name ='Sheet1')
+    writer.save()
+    print("Bantuan.xls is Done")
+
 # Fuzzification
+## Linguistic
+def linguistic(a,b,c,d):
+    return (a-b)/(c-d)
+    
 ## Income Classification
 def pendapatan(penghasilan):
-    if (0<=penghasilan<=4):
+    if (3<=penghasilan<=5):
         l = 1
-        m,mh,h = 0
-    elif (4<penghasilan<6):
-        l = (6-penghasilan)/2
-        m = (penghasilan-4)/2
-        mh,h = 0
-    elif (5<=penghasilan<=10):
+        m = 0
+        h = 0
+    elif (5<penghasilan<7):
+        l = linguistic(7,penghasilan,7,5)
+        m = linguistic(penghasilan,5,7,5)
+        h = 0
+    elif (7<=penghasilan<=9):
         l = 0
         m = 1
-        mh,h = 0
-    elif (10<penghasilan<12):
+        h = 0
+    elif (9<penghasilan<11):
         l = 0
-        m = (12-penghasilan)/2
-        mh = (penghasilan-10)/2
-        h = 0
-    elif (12<=penghasilan<=16):
-        l,m = 0
-        mh = 1
-        h = 0
-    elif (16<penghasilan<18):
-        l,m = 0
-        mh = (18-penghasilan)/2
-        h = (penghasilan-16)/2
-    elif (18<=penghasilan<=20):
-        l,m,mh = 0
+        m = linguistic(11,penghasilan,11,9)
+        h = linguistic(penghasilan,9,11,9)
+    elif (11<=penghasilan<=25):
+        l = 0
+        m = 0
         h = 1
-    return l,m,mh,h
+    return l,m,h
 
 ## Spending Classification
-def pengeluaran(nilai):
-    if (0<=nilai<=1):
+def pengeluaran(keluaran):
+    if (2<=keluaran<=5):
         low = 1
-        mid,midhigh,high = 0
-    elif (1<nilai<4):
-        low = (4-nilai)/3
-        mid = (nilai-1)/3
-        midhigh,high = 0
-    elif (4<=nilai<=5):
+        mid = 0
+        high = 0
+    elif (5<keluaran<6):
+        low = linguistic(6,keluaran,6,5)
+        mid = linguistic(keluaran,5,6,5)
+        high = 0
+    elif (6<=keluaran<=8):
         low = 0
         mid = 1
-        midhigh, high = 0
-    elif (5<nilai<8):
+        high = 0
+    elif (8<keluaran<10):
         low = 0
-        mid = (8-nilai)/3
-        midhigh = (nilai-5)/3
-        high = 0
-    elif (8<=nilai<=9):
-        low,mid = 0
-        midhigh = 1
-        high = 0
-    elif (9<nilai<11):
-        low,mid = 0
-        midhigh = (11-nilai)/3
-        high = (nilai-9)/3
-    elif (11<=nilai<=12):
-        low,mid,midhigh = 0
+        mid = linguistic(10,keluaran,10,8)
+        high = linguistic(keluaran,8,10,8)
+    elif (10<=keluaran<=20):
+        low = 0
+        mid = 0
         high = 1
-    return low,mid,midhigh,high
+    return low,mid,high
 
 # Inferensi
-def FR(l,m,mh,h,low,mid,midhigh,high):
+def FR(l,m,h,low,mid,high):
     if(0<l<=1 and 0<low<=1):
-        rule = 1
         yes = l
         no = 0
     elif (0<l<=1 and 0<mid<=1):
-        rule = 1
-        yes = l
-        no = 0
-    elif (0<l<=1 and 0<midhigh<=1):
-        rule = 1
         yes = l
         no = 0
     elif (0<l<=1 and 0<high<=1):
-        rule = 1
         yes = l
         no = 0
     elif (0<m<=1 and 0<low<=1):
-        rule, yes = 0
+        yes = 0
         no = m
     elif (0<m<=1 and 0<mid<=1):
-        rule = 1
-        yes = m
-        no = 0
-    elif (0<m<=1 and 0<midhigh<=1):
-        rule = 1
-        yes = m
-        no = 0
+        yes = 0
+        no = m
     elif (0<m<=1 and 0<high<=1):
-        rule = 1
         yes = m
-        no = 0
-    elif (0<mh<=1 and 0<low<=1):
-        rule,no = 0
-        yes = mh
-    elif (0<mh<=1 and 0<mid<=1):
-        rule,no = 0
-        yes = mh
-    elif (0<mh<=1 and 0<midhigh<=1):
-        rule = 1
-        yes = mh
-        no = 0
-    elif (0<mh<=1 and 0<high<=1):
-        rule = 1
-        yes = mh
         no = 0
     elif (0<h<=1 and 0<low<=1):
-        rule,no = 0
-        yes = h
+        yes = 0
+        no = h
     elif (0<h<=1 and 0<mid<=1):
-        rule,no = 0
-        yes = h
-    elif (0<h<=1 and 0<midhigh<=1):
-        rule,no = 0
-        yes = h
+        yes = 0
+        no = h
     elif (0<h<=1 and 0<high<=1):
-        rule = 1
         yes = h
         no = 0
-    return rules,yes,no
+    return yes,no
 
 # Defuzzification
 def sugeno(yes,no):
-    batasterima = 70
-    batastolak = 40
+    batasterima = 80
+    batastolak = 50
     jumlah = yes+no
-    return ((yes*batasterima)+(no*batastolak)/jumlah)
+    return (yes*batasterima)+(no*batastolak)/jumlah
     
 #MAIN-----
-readExcel()
+hasil = []
+n = 1
+income,spending = readExcel()
 for j in range(100):
-    pendapatan(float(income[i]))
-    pengeluaran(float(spending[i]))
-    FR(l,m,mh,h,low,mid,midhigh,high)
+    # Fuzzification Process
+    l,m,h = pendapatan(float(income[j]))
+    low,mid,high = pengeluaran(float(spending[j]))
+    #print("lmh : ",l,m,h)
+    #print("lowmidhigh : ",low,mid,high)
+    #Inference Process
+    yes,no = FR(l,m,h,low,mid,high)
+    #print("Y : ",yes," N : ",no)
+    # Defuzzification Process
+    sugen = sugeno(yes,no)
+    print("sugeno ke-",j," : ",sugen)
+    #print("====================")
+    if(sugen>=70 and n<=20):
+        #print("ke-",j," : ",yes,no)
+        hasil.insert(n,j)
+        n += 1
+print(hasil)
+writeExcel(hasil)
